@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/chuongchuong/bookings/pkg/config"
-	"github.com/chuongchuong/bookings/pkg/handler"
+	"github.com/chuongchuong/bookings/internal/config"
+	"github.com/chuongchuong/bookings/internal/handler"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
