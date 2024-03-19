@@ -65,5 +65,6 @@ func run() error {
 	handler.NewHandlers(repo)
 
 	render.NewTemplates(&app)
+	
 	return nil
 }
