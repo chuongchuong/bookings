@@ -20,7 +20,7 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 // run go mod init
-// go run ./cmd/web/
+// go run ./cmd/web/  OR .\run.bat (Recommended)
 func main() {
 	err := run() 
 	if err != nil {
@@ -65,6 +65,6 @@ func run() error {
 	handler.NewHandlers(repo)
 
 	render.NewTemplates(&app)
-	
+
 	return nil
 }
