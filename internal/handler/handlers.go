@@ -6,10 +6,13 @@ import (
 	"net/http"
 
 	"github.com/chuongchuong/bookings/internal/config"
+	"github.com/chuongchuong/bookings/internal/driver"
 	"github.com/chuongchuong/bookings/internal/forms"
 	"github.com/chuongchuong/bookings/internal/helpers"
 	"github.com/chuongchuong/bookings/internal/models"
 	"github.com/chuongchuong/bookings/internal/render"
+	"github.com/chuongchuong/bookings/internal/repository"
+	"github.com/chuongchuong/bookings/internal/repository/dbrepo"
 )
 
 // Repo the repository used by the handlers
@@ -18,12 +21,14 @@ var Repo *Repository
 // Repository is the repository type
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 // NewRepo create new Repository
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgresRepo(db.SQL, a),
 	}
 }
 
