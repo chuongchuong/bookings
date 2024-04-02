@@ -39,10 +39,10 @@ func main() {
 	listenForMail()
 
 	// msg := models.MailData{
-	// 	To:      "",
-	// 	From:    "",
-	// 	Subject: "",
-	// 	Content: "",
+	// 	To:      "csc@here.com",
+	// 	From:    "hs@here.com",
+	// 	Subject: "scs",
+	// 	Content: "YOYOYO",
 	// }
 	// app.MailChan <- msg
 

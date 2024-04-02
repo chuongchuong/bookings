@@ -20,11 +20,11 @@ func listenForMail() {
 
 func sendMessage(m models.MailData) {
 	server := mail.NewSMTPClient()
-	server.Host = "local"
+	server.Host = "localhost"
 	server.Port = 1025
 	server.KeepAlive = false
-	server.ConnectTimeout = 10 * time.Second
-	server.SendTimeout = 10 * time.Second
+	server.ConnectTimeout = 100 * time.Second
+	server.SendTimeout = 100 * time.Second
 
 	client, err := server.Connect()
 	if err != nil {
