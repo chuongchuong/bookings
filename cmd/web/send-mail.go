@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/chuongchuong/bookings/internal/models"
@@ -23,8 +26,8 @@ func sendMessage(m models.MailData) {
 	server.Host = "localhost"
 	server.Port = 1025
 	server.KeepAlive = false
-	server.ConnectTimeout = 100 * time.Second
-	server.SendTimeout = 100 * time.Second
+	server.ConnectTimeout = 10 * time.Second
+	server.SendTimeout = 10 * time.Second
 
 	client, err := server.Connect()
 	if err != nil {
@@ -33,12 +36,28 @@ func sendMessage(m models.MailData) {
 
 	email := mail.NewMSG()
 	email.SetFrom(m.From).AddTo(m.To).SetSubject(m.Subject)
-	email.SetBody(mail.TextHTML, m.Content)
+
+	//set template for mail
+	if m.Template == "" {
+		email.SetBody(mail.TextHTML, m.Content)
+	} else {
+		data, err := os.ReadFile(fmt.Sprintf("./email-templates/%s", m.Template))
+		if err != nil {
+			app.ErrorLog.Println(err)
+		}
+
+		mailTemplate := string(data)
+		msgToSend := strings.Replace(mailTemplate, "[%body%]", m.Content, 1)
+		email.SetBody(mail.TextHTML, msgToSend)
+
+	}
+	////
+	//email.SetBody(mail.TextHTML, m.Content)
 
 	err = email.Send(client)
 	if err != nil {
 		log.Println(err)
 	} else {
-		log.Println("email sent!")
+		log.Println("Email sent!")
 	}
 }
