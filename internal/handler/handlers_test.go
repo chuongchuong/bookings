@@ -115,8 +115,8 @@ func TestRepository_Reservation(t *testing.T) {
 
 func TestRepository_PostReservation(t *testing.T) {
 	layout := "2006-01-02"
-	sd, _ := time.Parse(layout, "2021-01-02")
-	ed, _ := time.Parse(layout, "2021-01-03")
+	sd, _ := time.Parse(layout, "2024-05-02")
+	ed, _ := time.Parse(layout, "2025-06-03")
 	reservation := models.Reservation{
 		RoomID:    1,
 		StartDate: sd,
@@ -127,16 +127,16 @@ func TestRepository_PostReservation(t *testing.T) {
 		},
 	}
 
-	// reqBody := "first_name=Anshuman"
+	// reqBody := "first_name=AAA"
 	// reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Lawania")
 	// reqBody = fmt.Sprintf("%s&%s", reqBody, "email=sad@gmail.com")
 	// reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=7891424299")
 	// reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
 
 	postedData := url.Values{}
-	postedData.Add("first_name", "Anshuman")
-	postedData.Add("last_name", "Lawania")
-	postedData.Add("email", "71anshuman@gmail.com")
+	postedData.Add("first_name", "zxxz")
+	postedData.Add("last_name", "xzxz")
+	postedData.Add("email", "zx@gmail.com")
 	postedData.Add("phone", "9718594945")
 	postedData.Add("room_id", "1")
 
@@ -228,7 +228,7 @@ func TestRepository_PostReservation(t *testing.T) {
 	postedData.Add("first_name", "asd")
 	postedData.Add("last_name", "das")
 	postedData.Add("email", "asd@gmail.com")
-	postedData.Add("phone", "213124")
+	postedData.Add("phone", "ewe")
 	postedData.Add("room_id", "1")
 
 	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(postedData.Encode()))
@@ -279,8 +279,8 @@ func TestRepository_PostReservation(t *testing.T) {
 }
 
 func TestRepository_AvailabilityJSON(t *testing.T) {
-	reqBody := "start=2021-01-02"
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "end=2021-01-03")
+	reqBody := "start=2025-01-02"
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "end=2025-01-03")
 	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
 
 	req, _ := http.NewRequest("POST", "/search-availability-json", strings.NewReader(reqBody))
