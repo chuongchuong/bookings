@@ -528,5 +528,5 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) AdminDashBoard(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-board.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
 }
