@@ -72,7 +72,23 @@ func (m *testDBRepo) AllNewReservations() ([]models.Reservation, error) {
 }
 
 // GetRerservationByID returns one reservation by ID
-func (m*testDBRepo) GetRerservationByID(id int)(models.Reservation,error){
+func (m *testDBRepo) GetRerservationByID(id int) (models.Reservation, error) {
 	var res models.Reservation
-	return res,nil
+	return res, nil
+}
+
+// UpdateReservation updates a reservation in database
+func (m *testDBRepo) UpdateReservation(u models.Reservation) error {
+	return nil
+}
+
+// Delete Reservations by ID
+func (m *testDBRepo) DeleteReservation (id int) error{
+	return nil
+}
+
+// UpdateProccessedForReservation updates proccessed for a reservation by ID
+func (m *testDBRepo) UpdateProccessedForReservation(id,proccessed int)error{
+
+	return nil
 }
