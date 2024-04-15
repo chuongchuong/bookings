@@ -74,12 +74,12 @@ function Prompt() {
             
           // })
         },
-        preConfirm: () => {
-          return [
-            document.getElementById("start").value,
-            document.getElementById("end").value
-          ];
-        },
+        // preConfirm: () => {
+        //   return [
+        //     document.getElementById("start").value,
+        //     document.getElementById("end").value
+        //   ];
+        // },
         didOpen: ()=>{
           if(c.didOpen !==undefined){
               c.didOpen();
