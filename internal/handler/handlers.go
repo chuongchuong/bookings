@@ -112,58 +112,68 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 
 // PostReservation  handles theposting of reservation
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
-	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
-	if !ok {
-		m.App.Session.Put(r.Context(), "error", "cant get reservation from session")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
+	// reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	// if !ok {
+	// 	m.App.Session.Put(r.Context(), "error", "cant get reservation from session")
+	// 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	// 	return
+	// }
 
 	err := r.ParseForm()
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "cant parse form!")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	// sd := r.Form.Get("start_date")
-	// ed := r.Form.Get("end_date")
+	sd := r.Form.Get("start_date")
+	ed := r.Form.Get("end_date")
 
-	// //2021-01-01 _____ 01/02 03:04:05PM '06 -0700
-	// layout := "2006-01-02"
-	// startDate, err := time.Parse(layout, sd)
-	// if err != nil {
-	// m.App.Session.Put(r.Context(), "error", "cant parse start date!")
-	// http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	// return
-	// }
-	// endDate, err := time.Parse(layout, ed)
-	// if err != nil {
-	// m.App.Session.Put(r.Context(), "error", "cant parse end date!")
-	// http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	// return
-	// }
+	//2021-01-01 _____ 01/02 03:04:05PM '06 -0700
+	layout := "2006-01-02"
 
-	// roomID, err := strconv.Atoi(r.Form.Get("room_id"))
-	// if err != nil {
-	// m.App.Session.Put(r.Context(), "error", "Invalid data!")
-	// http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	// return
-	// }
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "cant parse start date!")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
-	reservation.FirstName = r.Form.Get("first_name")
-	reservation.LastName = r.Form.Get("last_name")
-	reservation.Phone = r.Form.Get("phone")
-	reservation.Email = r.Form.Get("email")
+	endDate, err := time.Parse(layout, ed)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "cant parse end date!")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
-	// reservation := models.Reservation{
-	// 	FirstName: r.Form.Get("first_name"),
-	// 	LastName:  r.Form.Get("last_name"),
-	// 	Phone:     r.Form.Get("phone"),
-	// 	Email:     r.Form.Get("email"),
-	// 	StartDate: startDate,
-	// 	EndDate:   endDate,
-	// 	RoomID:    roomID,
-	// }
+	roomID, err := strconv.Atoi(r.Form.Get("room_id"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Invalid data!")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	room, err := m.DB.GetRoomByID(roomID)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Invalid data!")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	// reservation.FirstName = r.Form.Get("first_name")
+	// reservation.LastName = r.Form.Get("last_name")
+	// reservation.Phone = r.Form.Get("phone")
+	// reservation.Email = r.Form.Get("email")
+
+	reservation := models.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Phone:     r.Form.Get("phone"),
+		Email:     r.Form.Get("email"),
+		StartDate: startDate,
+		EndDate:   endDate,
+		RoomID:    roomID,
+		Room:      room,
+	}
 
 	form := forms.New(r.PostForm)
 
@@ -172,6 +182,10 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	form.MinLength("first_name", 3)
 	form.IsEmail("email")
 
+	stringMap := make(map[string]string)
+	stringMap["start_date"] = sd
+	stringMap["end_date"] = ed
+
 	if !form.Valid() {
 		data := make(map[string]interface{})
 		data["reservation"] = reservation
@@ -179,6 +193,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,
+			StringMap: stringMap,
 		})
 		return
 	}
@@ -618,8 +633,6 @@ func (m *Repository) AdminPostShowReservation(w http.ResponseWriter, r *http.Req
 	stringMap := make(map[string]string)
 	stringMap["src"] = src
 
-	
-
 	res, err := m.DB.GetRerservationByID(id)
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -636,18 +649,17 @@ func (m *Repository) AdminPostShowReservation(w http.ResponseWriter, r *http.Req
 		helpers.ServerError(w, err)
 		return
 	}
-	
 
 	month := r.Form.Get("month")
 	year := r.Form.Get("year")
 
 	m.App.Session.Put(r.Context(), "flash", "Changes Saved")
 
-	if year == ""{
+	if year == "" {
 		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
-	}else{
-	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
-	
+	} else {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
+
 	}
 }
 
@@ -756,12 +768,11 @@ func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Requ
 
 	m.App.Session.Put(r.Context(), "flash", "Reservation marked as processed")
 
-	if year == ""{
+	if year == "" {
 		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
-	}else{
-		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year,month), http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
 	}
-	
 
 }
 
@@ -769,7 +780,7 @@ func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Requ
 func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	src := chi.URLParam(r, "src")
-	err:= m.DB.DeleteReservation(id)
+	err := m.DB.DeleteReservation(id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -778,12 +789,11 @@ func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Reque
 	month := r.URL.Query().Get("m")
 
 	m.App.Session.Put(r.Context(), "flash", "Reservation deleted")
-	if year == ""{
+	if year == "" {
 		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
-	}else{
-		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year,month), http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
 	}
-	
 
 }
 
