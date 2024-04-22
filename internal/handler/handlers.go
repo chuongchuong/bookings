@@ -766,7 +766,7 @@ func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Requ
 }
 
 // AdminDelteReservation deletes a reservation
-func (m *Repository) AdminDelteReservation(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	src := chi.URLParam(r, "src")
 	err:= m.DB.DeleteReservation(id)
